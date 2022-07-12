@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/CaritasDeutschland/caritas-onlineBeratung-videoService/compare/v1.6.0...v1.7.0) (2022-07-12)
+
+
+### Features
+
+* [VIC-795] added fork auto sync config ([7df901e](https://github.com/CaritasDeutschland/caritas-onlineBeratung-videoService/commit/7df901e59d8e9d589779c70ecaef361deec0bd60))
+* provide initiators display name if present for live event ([43c9c00](https://github.com/CaritasDeutschland/caritas-onlineBeratung-videoService/commit/43c9c00e8a0f689191f0e662c12fb76cb88bf4a4))
+* remove user context claim from JWT token ([c513abd](https://github.com/CaritasDeutschland/caritas-onlineBeratung-videoService/commit/c513abd7b8a5e157dce67566969fd6de02f5888a))
+
+
+### Bug Fixes
+
+* provide tenant id for message service call ([f01842f](https://github.com/CaritasDeutschland/caritas-onlineBeratung-videoService/commit/f01842fe6b24d547f2322b7ca921cd083b1bb7c5))
+
 ## [1.6.0](https://github.com/CaritasDeutschland/caritas-onlineBeratung-videoService/compare/v1.5.1...v1.6.0) (2022-05-04)
 
 
