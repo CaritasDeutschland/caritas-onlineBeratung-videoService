@@ -1,57 +1,45 @@
 package de.caritas.cob.videoservice.api.service;
 
-import static de.caritas.cob.videoservice.api.testhelper.FieldConstants.FIELD_NAME_GENERATED_UUIDS;
+import static de.caritas.cob.videoservice.api.service.UuidRegistry.GENERATED_UUIDS;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.reflect.Whitebox.setInternalState;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
 import java.util.UUID;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(PowerMockRunner.class)
-public class UuidRegistryTest {
+@ExtendWith(MockitoExtension.class)
+class UuidRegistryTest {
 
-  @InjectMocks
-  private UuidRegistry uuidRegistry;
-  @Mock
-  private List<UUID> uuidList;
+  private UuidRegistry uuidRegistry = new UuidRegistry();
 
-  @Before
-  public void setUp() {
-    setInternalState(UuidRegistry.class, FIELD_NAME_GENERATED_UUIDS, uuidList);
+  @BeforeEach
+  void setUp() {
     uuidRegistry.cleanUpUuidRegistry();
   }
 
   @Test
-  public void generateUniqueUuid_Should_ReturnValidUuid() {
+  void generateUniqueUuid_Should_ReturnValidUuid() {
     String response = uuidRegistry.generateUniqueUuid();
 
     assertThat(UUID.fromString(response), instanceOf(UUID.class));
   }
 
   @Test
-  public void generateUniqueUuid_Should_AddGeneratedUuidToRegistry() {
+  void generateUniqueUuid_Should_AddGeneratedUuidToRegistry() {
     String response = uuidRegistry.generateUniqueUuid();
 
     assertThat(UUID.fromString(response), instanceOf(UUID.class));
-    verify(uuidList, times(1)).add(UUID.fromString(response));
+    assertThat(GENERATED_UUIDS.size(), equalTo(1));
   }
 
   @Test
-  public void cleanUpEntireList_Should_cleanListOfUuids() {
-    uuidList.add(UUID.randomUUID());
-
+  void cleanUpEntireList_Should_cleanListOfUuids() {
     uuidRegistry.cleanUpUuidRegistry();
-
-    assertEquals(0, uuidList.size());
+    assertEquals(0, GENERATED_UUIDS.size());
   }
 }

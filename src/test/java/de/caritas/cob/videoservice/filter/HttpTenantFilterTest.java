@@ -1,11 +1,11 @@
 package de.caritas.cob.videoservice.filter;
 
 import de.caritas.cob.videoservice.api.tenant.TenantResolverService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +31,20 @@ class HttpTenantFilterTest {
       throws ServletException, IOException {
     // given
     Mockito.when(request.getRequestURI()).thenReturn("/actuator/health/liveness");
+
+    // when
+    httpTenantFilter.doFilterInternal(request, response, filterChain);
+
+    // then
+    Mockito.verifyNoInteractions(tenantResolverService);
+  }
+
+  @Test
+  void doFilterInternal_Should_NotApply_When_RequestBelongsToTenancyWhiteListForStopEvent()
+      throws ServletException, IOException {
+    // given
+    Mockito.when(request.getRequestURI())
+        .thenReturn("/videocalls/event/stop/5bb0dc45-eb79-4f75-af53-a4d0de4eeaf2@muc.meet.jitsi");
 
     // when
     httpTenantFilter.doFilterInternal(request, response, filterChain);

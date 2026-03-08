@@ -14,27 +14,34 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.12</version>
+		<version>3.3.9</version>
 		<relativePath/>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<keycloak.version>17.0.0</keycloak.version>
 		<!-- force at least version 2.16 due to https://logging.apache.org/log4j/2.x/security.html -->
 		<log4j.version>2.19.0</log4j.version>
-		<openapi-generator-maven-plugin.version>6.2.1</openapi-generator-maven-plugin.version>
-		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
+		<openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
+
 		<jackson-databind-nullable.version>0.2.3</jackson-databind-nullable.version>
-		<spring-swagger-ui.version>2.10.0</spring-swagger-ui.version>
-		<spring-security-core.version>5.7.5</spring-security-core.version>
+
+		<spring-security.version>6.3.4</spring-security.version>
 		<ehcache.version>2.10.9.2</ehcache.version>
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<java-jwt.version>3.12.1</java-jwt.version>
 		<commons-lang3.version>3.11</commons-lang3.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
+		<h2.version>2.1.214</h2.version>
+		<liquibase-core.version>4.23.2</liquibase-core.version>
+		<hibernate.validator.version>8.0.0.Final</hibernate.validator.version>
+		<liquibase.maven.plugin.version>4.23.2</liquibase.maven.plugin.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+
 	</properties>
 
 	<dependencies>
@@ -55,12 +62,25 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>${spring-security-core.version}</version>
+			<artifactId>spring-security-web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+
 
 		<!-- caching dependencies -->
 		<dependency>
@@ -85,7 +105,7 @@
 			<version>4.3.1</version>
 		</dependency>
 
-		<!-- OpenApi/Swagger dependencies -->
+		<!-- OpenApi dependencies -->
 		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>openapi-generator-maven-plugin</artifactId>
@@ -98,26 +118,75 @@
 			<version>${jackson-databind-nullable.version}</version>
 		</dependency>
 		<!-- SpringFox: generate YAML file from POJOs and generate documentation -->
+
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-boot-starter</artifactId>
-			<version>${springfox-boot-starter.version}</version>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
 		</dependency>
+
+		<!-- json dependencies -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20220320</version>
+		</dependency>
+
 		<!-- Keycloak dependencies -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-security-adapter</artifactId>
-			<version>${keycloak.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-boot-starter</artifactId>
-			<version>${keycloak.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<version>${javax.ws.rs-api.version}</version>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+		</dependency>
+
+		<!-- Persistence -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-maven-plugin</artifactId>
+			<version>${liquibase.maven.plugin.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.liquibase</groupId>
+					<artifactId>liquibase-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
 		</dependency>
 
 		<!-- JWT builder dependency -->
@@ -138,7 +207,6 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${commons-lang3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -152,6 +220,7 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -162,18 +231,6 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<artifactId>powermock-module-junit4</artifactId>
-			<groupId>org.powermock</groupId>
-			<scope>test</scope>
-			<version>2.0.2</version>
-		</dependency>
-		<dependency>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<groupId>org.powermock</groupId>
-			<scope>test</scope>
-			<version>2.0.2</version>
 		</dependency>
 		<!-- EasyRandom -->
 		<dependency>
@@ -200,17 +257,15 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-to-slf4j</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>2.0</version>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
 		</dependency>
 
 	</dependencies>
@@ -244,7 +299,7 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>5.1.1</version>
+				<version>6.2.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -254,7 +309,9 @@
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>
 								<sourceFolder>/</sourceFolder>
+								<useSpringBoot3>true</useSpringBoot3>
 							</configOptions>
+
 							<inputSpec>${project.basedir}/api/videoservice.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<apiPackage>${project.groupId}.${project.artifactId}.generated.api.controller
@@ -390,7 +447,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.6.0</version>
 				<executions>
 					<execution>
 						<id>validate</id>
@@ -411,12 +468,35 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Code style check -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.23.0</version>
+				<configuration>
+					<java>
+						<toggleOffOn />
+						<googleJavaFormat>
+							<version>1.15.0</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Surefire plugin version managed by Spring Boot -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 				</configuration>
 				<executions>
 					<execution>
@@ -450,7 +530,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -464,6 +543,24 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openrewrite.maven</groupId>
+				<artifactId>rewrite-maven-plugin</artifactId>
+				<version>6.0.4</version>
+				<configuration>
+					<exportDatatables>true</exportDatatables>
+					<activeRecipes>
+						<recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe>
+					</activeRecipes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.openrewrite.recipe</groupId>
+						<artifactId>rewrite-spring</artifactId>
+						<version>6.0.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

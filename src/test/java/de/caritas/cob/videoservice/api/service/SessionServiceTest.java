@@ -7,60 +7,57 @@ import static de.caritas.cob.videoservice.api.testhelper.FieldConstants.FIELD_VA
 import static de.caritas.cob.videoservice.api.testhelper.TestConstants.SESSION_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.caritas.cob.videoservice.api.service.securityheader.SecurityHeaderSupplier;
+import de.caritas.cob.videoservice.api.service.httpheader.SecurityHeaderSupplier;
+import de.caritas.cob.videoservice.api.service.httpheader.TenantHeaderSupplier;
 import de.caritas.cob.videoservice.api.service.session.SessionService;
+import de.caritas.cob.videoservice.api.service.session.UserServiceApiControllerFactory;
 import de.caritas.cob.videoservice.userservice.generated.ApiClient;
 import de.caritas.cob.videoservice.userservice.generated.web.UserControllerApi;
 import de.caritas.cob.videoservice.userservice.generated.web.model.ConsultantSessionDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SessionServiceTest {
+@ExtendWith(MockitoExtension.class)
+class SessionServiceTest {
 
-  @InjectMocks
-  private SessionService sessionService;
-  @Mock
-  private UserControllerApi userControllerApi;
-  @Mock
-  private SecurityHeaderSupplier serviceHelper;
+  @InjectMocks private SessionService sessionService;
+  @Mock private UserControllerApi userControllerApi;
+  @Mock private SecurityHeaderSupplier serviceHelper;
 
-  @Mock
-  private HttpHeaders httpHeaders;
+  @Mock private HttpHeaders httpHeaders;
 
-  @Mock
-  private ServletRequestAttributes requestAttributes;
+  @Mock private ServletRequestAttributes requestAttributes;
 
-  @Mock
-  private HttpServletRequest httpServletRequest;
+  @Mock private HttpServletRequest httpServletRequest;
 
-  @Mock
-  private TenantHeaderSupplier tenantHeaderSupplier;
+  @Mock private TenantHeaderSupplier tenantHeaderSupplier;
 
-  @Mock
-  private Enumeration<String> headers;
+  @Mock private Enumeration<String> headers;
+
+  @Mock private UserServiceApiControllerFactory userControllerApiControllerFactory;
 
   @Test
-  public void findSessionOfCurrentConsultant_Should_ReturnConsultantSessionDto_When_GetSessionIsSuccessful() {
+  void
+      findSessionOfCurrentConsultant_Should_ReturnConsultantSessionDto_When_GetSessionIsSuccessful() {
     ConsultantSessionDTO consultantSessionDto = mock(ConsultantSessionDTO.class);
+    when(userControllerApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
 
     when(serviceHelper.getKeycloakAndCsrfHttpHeaders()).thenReturn(httpHeaders);
     when(userControllerApi.fetchSessionForConsultant(SESSION_ID)).thenReturn(consultantSessionDto);
@@ -71,8 +68,9 @@ public class SessionServiceTest {
   }
 
   @Test
-  public void findSessionOfCurrentConsultant_Should_AddKeycloakAndCsrfHttpHeaders() {
+  void findSessionOfCurrentConsultant_Should_AddKeycloakAndCsrfHttpHeaders() {
     HttpHeaders headers = new HttpHeaders();
+    when(userControllerApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
     headers.add(FIELD_NAME_CSRF_TOKEN_HEADER_PROPERTY, FIELD_VALUE_CSRF_TOKEN_HEADER_PROPERTY);
     headers.add(FIELD_NAME_CSRF_TOKEN_COOKIE_PROPERTY, FIELD_VALUE_CSRF_TOKEN_COOKIE_PROPERTY);
     ConsultantSessionDTO consultantSessionDto = mock(ConsultantSessionDTO.class);
@@ -96,5 +94,4 @@ public class SessionServiceTest {
   private void resetRequestAttributes() {
     RequestContextHolder.setRequestAttributes(null);
   }
-
 }

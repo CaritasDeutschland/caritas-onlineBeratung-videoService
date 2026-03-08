@@ -1,5 +1,6 @@
 package de.caritas.cob.videoservice.api.service.statistics;
 
+import static de.caritas.cob.videoservice.api.testhelper.TestConstants.ADVICESEEKER_ID;
 import static de.caritas.cob.videoservice.api.testhelper.TestConstants.CONSULTANT_ID;
 import static de.caritas.cob.videoservice.api.testhelper.TestConstants.SESSION_ID;
 import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
@@ -15,37 +16,32 @@ import de.caritas.cob.videoservice.testconfig.RabbitMqTestConfig;
 import java.io.IOException;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @TestPropertySource(properties = "spring.profiles.active=testing")
 @ContextConfiguration(classes = RabbitMqTestConfig.class)
 @SpringBootTest(classes = VideoServiceApplication.class)
-public class StatisticsServiceIT {
+class StatisticsServiceIT {
 
   private static final long MAX_TIMEOUT_MILLIS = 5000;
 
-  @Autowired
-  StatisticsService statisticsService;
-  @Autowired
-  AmqpTemplate amqpTemplate;
+  @Autowired StatisticsService statisticsService;
+  @Autowired AmqpTemplate amqpTemplate;
 
   @Test
-  public void fireEvent_Should_Send_ExpectedAssignSessionStatisticsEventMessageToQueue()
+  void fireEvent_Should_Send_ExpectedAssignSessionStatisticsEventMessageToQueue()
       throws IOException {
 
     UUID uuid = UUID.randomUUID();
     StartVideoCallStatisticsEvent startVideoCallStatisticsEvent =
-        new StartVideoCallStatisticsEvent(CONSULTANT_ID, UserRole.CONSULTANT, SESSION_ID, uuid.toString());
-
+        new StartVideoCallStatisticsEvent(
+            CONSULTANT_ID, UserRole.CONSULTANT, SESSION_ID, uuid.toString(), ADVICESEEKER_ID, 1L);
 
     statisticsService.fireEvent(startVideoCallStatisticsEvent);
     Message message =
@@ -54,6 +50,9 @@ public class StatisticsServiceIT {
 
     String expectedJson =
         "{"
+            + "  \"adviceSeekerId\":\""
+            + ADVICESEEKER_ID
+            + "\","
             + "  \"userId\":\""
             + CONSULTANT_ID
             + "\","
@@ -71,7 +70,8 @@ public class StatisticsServiceIT {
             + "\","
             + "  \"videoCallUuid\":\""
             + uuid
-            + "\""
+            + "\","
+            + "\"tenantId\":1"
             + "}";
 
     assertThat(
@@ -82,5 +82,4 @@ public class StatisticsServiceIT {
   private String extractBodyFromAmpQMessage(Message message) throws IOException {
     return IOUtils.toString(message.getBody(), UTF_8);
   }
-
 }
